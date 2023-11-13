@@ -45,7 +45,7 @@ function App() {
   };
 
   const updateQuantity = (itemId, newQuantity) => {
-    // Implementa la lógica para actualizar la cantidad del producto en el carrito aquí
+    // actualizar la cantidad del producto en el carrito 
     setCartItems((prevItems) =>
       prevItems.map((item) =>
         item.id === itemId ? { ...item, quantity: newQuantity } : item

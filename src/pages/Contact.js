@@ -11,7 +11,7 @@ import {
 const Contact = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Aquí puedes implementar la lógica para enviar el formulario o mostrar un mensaje de éxito.
+    // enviar el formulario o mostrar un mensaje de realizado
     console.log("Formulario enviado");
   };
 

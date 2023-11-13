@@ -29,7 +29,7 @@ const StyledCard = styled(Card)({
 });
 
 const StyledCardMedia = styled(CardMedia)({
-  paddingTop: "56.25%", // 16:9
+  paddingTop: "56.25%", 
 });
 
 const ExploreButtonContainer = styled(Container)({
@@ -39,7 +39,7 @@ const ExploreButtonContainer = styled(Container)({
 const HomePage = () => {
   return (
     <div>
-      {/* Hero Section */}
+      
       <HeroContent>
         <Container maxWidth="sm">
           <Typography component="h1" variant="h2" align="center" gutterBottom>
@@ -52,7 +52,7 @@ const HomePage = () => {
         </Container>
       </HeroContent>
 
-      {/* Featured Products */}
+      
       <CardContainer maxWidth="md" component="main">
         <Grid container spacing={4}>
           {[1, 2, 3].map((productNumber) => (
