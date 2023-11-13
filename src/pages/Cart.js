@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   List,
   ListItem,
@@ -6,11 +6,25 @@ import {
   ListItemSecondaryAction,
   Typography,
   Button,
+  IconButton,
+  TextField,
+  Grid,
 } from "@mui/material";
-import { Delete as DeleteIcon } from "@mui/icons-material";
+import { Delete as DeleteIcon, Add as AddIcon, Remove as RemoveIcon } from "@mui/icons-material";
 
-const Cart = ({ cartItems, removeFromCart }) => {
-  console.log("Rendering Cart component");
+
+const Cart = ({ cartItems, removeFromCart, updateQuantity }) => {
+  const [localCartItems, setLocalCartItems] = useState([]);
+
+  useEffect(() => {
+    const storedCartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+    setLocalCartItems(storedCartItems);
+  }, []); 
+
+  useEffect(() => {
+    localStorage.setItem("cartItems", JSON.stringify(localCartItems));
+  }, [localCartItems]);
+
   return (
     <div>
       <Typography variant="h4" gutterBottom>
@@ -22,19 +36,42 @@ const Cart = ({ cartItems, removeFromCart }) => {
         <List>
           {cartItems.map((item) => (
             <ListItem key={item.id}>
-              <ListItemText
-                primary={item.name}
-                secondary={`Quantity: ${item.quantity}`}
-              />
-              <ListItemSecondaryAction>
-                <Button
-                  color="secondary"
-                  onClick={() => removeFromCart(item.id)}
-                  startIcon={<DeleteIcon />}
-                >
-                  Remove
-                </Button>
-              </ListItemSecondaryAction>
+              <ListItemText primary={item.name} />
+              <Grid container alignItems="center">
+                <Grid item>
+                  <TextField
+                    type="number"
+                    value={item.quantity}
+                    InputProps={{ inputProps: { min: 1 } }}
+                    onChange={(e) => updateQuantity(item.id, parseInt(e.target.value, 10))}
+                  />
+                </Grid>
+                <Grid item>
+                  <IconButton
+                    color="primary"
+                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                  >
+                    <AddIcon />
+                  </IconButton>
+                </Grid>
+                <Grid item>
+                  <IconButton
+                    color="primary"
+                    onClick={() => updateQuantity(item.id, Math.max(item.quantity - 1, 1))}
+                  >
+                    <RemoveIcon />
+                  </IconButton>
+                </Grid>
+                <ListItemSecondaryAction>
+                  <Button
+                    color="secondary"
+                    onClick={() => removeFromCart(item.id)}
+                    startIcon={<DeleteIcon />}
+                  >
+                    Remove
+                  </Button>
+                </ListItemSecondaryAction>
+              </Grid>
             </ListItem>
           ))}
         </List>

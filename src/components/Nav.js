@@ -9,9 +9,10 @@ import {
   Menu,
   MenuItem,
   IconButton,
+  Badge,
 } from '@mui/material';
 import { Link } from 'react-router-dom';  
-import { AccountCircle } from '@mui/icons-material';
+import { AccountCircle, ShoppingCart } from '@mui/icons-material';
 
 const Nav = ({ cartItems }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -23,6 +24,8 @@ const Nav = ({ cartItems }) => {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+
+  const totalQuantity = cartItems ? cartItems.reduce((total, item) => total + item.quantity, 0) : 0;
 
   return (
     <div>
@@ -37,10 +40,15 @@ const Nav = ({ cartItems }) => {
           </Button>
           <Button component={Link} to="/products" color="inherit">
             Products
-          </Button>
+          </Button>     
+
           <Button component={Link} to="/cart" color="inherit">
-            Cart ({cartItems})
-          </Button>
+            <Badge badgeContent={totalQuantity} color="error">
+      
+              <ShoppingCart />
+            </Badge>
+            Cart
+            </Button>
           <Button component={Link} to="/contact" color="inherit">
             Contact
           </Button>
