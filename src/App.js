@@ -15,11 +15,11 @@ function App() {
 
 
   const addToCart = (product) => {
-    // Check if the product is already in the cart
+    // verifica si existe el producto en el cart
     const existingItem = cartItems.find((item) => item.id === product.id);
 
     if (existingItem) {
-      // If it exists, update the quantity
+      // si existe suma 1
       setCartItems((prevItems) =>
         prevItems.map((item) =>
           item.id === product.id
@@ -28,12 +28,15 @@ function App() {
         )
       );
     } else {
-      // If it's not in the cart, add it with quantity 1
+      // si no existe en el carrito agrega 1
       setCartItems((prevItems) => [...prevItems, { ...product, quantity: 1 }]);
     }
   };
 
-
+  const removeFromCart = (itemId) => {
+    const updatedCart = cartItems.filter((item) => item.id !== itemId);
+    setCartItems(updatedCart);
+  };
 
 
 
@@ -48,7 +51,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<Products addToCart={addToCart} />} />
-            <Route path="/cart" element={<Cart cartItems={cartItems} />} />
+            <Route path="/cart" element={<Cart cartItems={cartItems} removeFromCart={removeFromCart} />}
+            />
             <Route path="/contact" element={<Contact />} />
           </Routes>
         </BrowserRouter>
