@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   List,
   ListItem,
@@ -9,13 +9,7 @@ import {
 } from "@mui/material";
 import { Delete as DeleteIcon } from "@mui/icons-material";
 
-const Cart = () => {
-  const [cartItems, setCartItems] = useState([]);
-
-  const removeFromCart = (itemId) => {
-    const updatedCart = cartItems.filter((item) => item.id !== itemId);
-    setCartItems(updatedCart);
-  };
+const Cart = ({ cartItems, removeFromCart }) => {
   console.log("Rendering Cart component");
   return (
     <div>

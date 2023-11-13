@@ -86,7 +86,10 @@ const Products = ({ addToCart }) => {
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => addToCart(product)}
+                    onClick={() => {
+                      addToCart(product);
+                      handleAddToCart(); // Añade el producto al carrito y muestra la notificación
+                    }}
                     endIcon={<AddShoppingCartIcon />}
                   >
                     Add to Cart
