@@ -14,6 +14,13 @@ import { Delete as DeleteIcon, Add as AddIcon, Remove as RemoveIcon } from "@mui
 
 
 const Cart = ({ cartItems, removeFromCart, updateQuantity }) => {
+  const calculateItemTotal = (item) => {
+    return item.price * item.quantity;
+  };
+
+  const calculateCartTotal = () => {
+    return cartItems.reduce((total, item) => total + calculateItemTotal(item), 0);
+  };
   return (
     <div>
       <Typography variant="h4" gutterBottom>
@@ -25,7 +32,7 @@ const Cart = ({ cartItems, removeFromCart, updateQuantity }) => {
         <List>
           {cartItems.map((item) => (
             <ListItem key={item.id}>
-              <ListItemText primary={item.name} />
+              <ListItemText primary={item.name}  secondary={`Price: $${item.price}`}/>
               <Grid container alignItems="center">
                 <Grid item>
                   <TextField
@@ -52,6 +59,9 @@ const Cart = ({ cartItems, removeFromCart, updateQuantity }) => {
                   </IconButton>
                 </Grid>
                 <ListItemSecondaryAction>
+                <Typography variant="subtitle1">
+                    Unit Price: ${item.price} | Total: ${calculateItemTotal(item)}
+                  </Typography>
                   <Button
                     color="secondary"
                     onClick={() => removeFromCart(item.id)}
@@ -65,6 +75,9 @@ const Cart = ({ cartItems, removeFromCart, updateQuantity }) => {
           ))}
         </List>
       )}
+        <Typography variant="h6" style={{ marginTop: 20 }}>
+        Total: ${calculateCartTotal()}
+      </Typography>
     </div>
   );
 };
