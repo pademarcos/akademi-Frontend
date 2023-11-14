@@ -12,11 +12,8 @@ import Cart from "./pages/Cart";
 
 function App() {
    // Función para obtener productos desde localStorage
-   const getStoredCartItems = () => {
-    const storedCartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-    return storedCartItems;
-  };
-  const [cartItems, setCartItems] = useState(getStoredCartItems());
+   const initialCartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+  const [cartItems, setCartItems] = useState(initialCartItems);
 
   const addToCart = (product) => {
     // verifica si existe el producto en el cart

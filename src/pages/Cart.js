@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   List,
   ListItem,
@@ -14,17 +14,6 @@ import { Delete as DeleteIcon, Add as AddIcon, Remove as RemoveIcon } from "@mui
 
 
 const Cart = ({ cartItems, removeFromCart, updateQuantity }) => {
-  const [localCartItems, setLocalCartItems] = useState([]);
-
-  useEffect(() => {
-    const storedCartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-    setLocalCartItems(storedCartItems);
-  }, []); 
-
-  useEffect(() => {
-    localStorage.setItem("cartItems", JSON.stringify(localCartItems));
-  }, [localCartItems]);
-
   return (
     <div>
       <Typography variant="h4" gutterBottom>
