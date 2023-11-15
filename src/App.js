@@ -11,7 +11,7 @@ import Products from "./pages/Products";
 import Cart from "./pages/Cart";
 
 function App() {
-   // Función para obtener productos desde localStorage
+   // Función para obtener productos desde localStorag
    const initialCartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
   const [cartItems, setCartItems] = useState(initialCartItems);
 
