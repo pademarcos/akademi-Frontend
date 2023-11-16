@@ -16,7 +16,11 @@ import {
   IconButton,
   Box,
 } from "@mui/material";
-import { AddShoppingCart as AddShoppingCartIcon, Add as AddIcon, ErrorOutline as ErrorOutlineIcon } from "@mui/icons-material";
+import { AddShoppingCart as AddShoppingCartIcon,
+         Add as AddIcon,
+         ErrorOutline as ErrorOutlineIcon,
+         Delete as DeleteIcon
+        } from "@mui/icons-material";
 
 const Products = ({ addToCart }) => {
   const [category, setCategory] = useState("all");
@@ -26,24 +30,27 @@ const Products = ({ addToCart }) => {
   const [newCategoryName, setNewCategoryName] = useState("");
   const [isModalOpen, setModalOpen] = useState(false);
   const [isErrorModalOpen, setErrorModalOpen] = useState(false);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
 
   useEffect(() => {
-    // Realiza una solicitud a la API para obtener la lista de categorías
+    fetchCategories(); 
+    fetchProducts();
+  }, [category]);
+
+
+  const fetchCategories = () => {
     fetch("http://localhost:4000/api/categories")
       .then((response) => response.json())
       .then((data) => {
-        // Agrega la categoría especial "Uncategorized" para productos sin categoría
         const categoriesWithUncategorized = [
-          // { _id: "_uncategorized", name: "Uncategorized" },
           ...data.categories,
         ];
         setCategories(categoriesWithUncategorized);
       })
       .catch((error) => console.error("Error fetching categories:", error));
-  }, [category]);
+  };
 
-  useEffect(() => {
-    // Realiza una solicitud a la API para obtener la lista de productos según la categoría seleccionada
+  const fetchProducts = () => {
     const url =
       category === "all"
         ? "http://localhost:4000/api/products"
@@ -52,9 +59,14 @@ const Products = ({ addToCart }) => {
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
-        setProducts(data.products || []); 
+        setProducts(data.products || []);
       })
       .catch((error) => console.error("Error fetching products:", error));
+  };
+
+  useEffect(() => {
+    // Realiza una solicitud a la API para obtener la lista de productos según la categoría seleccionada
+    fetchProducts();
   }, [category]);
 
   const handleOpenModal = () => {
@@ -80,6 +92,14 @@ const Products = ({ addToCart }) => {
 
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
+  };
+
+  const handleOpenDeleteModal = () => {
+    setDeleteModalOpen(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setDeleteModalOpen(false);
   };
 
   const handleCreateCategory = () => {
@@ -112,6 +132,21 @@ const Products = ({ addToCart }) => {
      .catch((error) => console.error("Error creating category:", error));
  };
 
+ const handleDeleteCategory = (categoryId) => {
+   console.log("Deleting category with ID:", categoryId);
+  fetch(`http://localhost:4000/api/categories/${categoryId}`, {
+    method: "DELETE",
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      fetchCategories(); 
+      handleCloseDeleteModal();
+    })
+    .catch((error) => console.error("Error deleting category:", error));
+};
+
+
+
   // const filteredProducts =
   // category === "all"
   //   ? products
@@ -138,6 +173,9 @@ const Products = ({ addToCart }) => {
           </FormControl>
           <IconButton color="primary" onClick={handleOpenModal}>
             <AddIcon />
+          </IconButton>
+          <IconButton color="secondary" onClick={handleOpenDeleteModal}>
+            <DeleteIcon />
           </IconButton>
         </Box>
       </Container>
@@ -245,6 +283,48 @@ const Products = ({ addToCart }) => {
           </Typography>
           <Button variant="contained" color="primary" onClick={handleCloseErrorModal}>
             OK
+          </Button>
+        </Box>
+      </Modal>
+      <Modal
+        open={isDeleteModalOpen}
+        onClose={handleCloseDeleteModal}
+        aria-labelledby="delete-modal-title"
+        aria-describedby="delete-modal-description"
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Typography variant="h6" component="h2">
+            Delete Category
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Are you sure you want to delete the following categories?
+          </Typography>
+          <ul>
+            {categories.map((cat) => (
+              <li key={cat._id}>
+                {cat.name}
+                <IconButton
+                  color="secondary"
+                  onClick={() => handleDeleteCategory(cat._id)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </li>
+            ))}
+          </ul>
+          <Button variant="contained" color="primary" onClick={handleCloseDeleteModal}>
+            Cancel
           </Button>
         </Box>
       </Modal>
