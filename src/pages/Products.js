@@ -37,6 +37,10 @@ const Products = ({ addToCart }) => {
     fetchProducts();
   }, [category]);
 
+  const getCategoryName = (categoryId) => {
+    const category = categories.find((cat) => cat._id === categoryId);
+    return category ? category.name : "Uncategorized";
+  };
 
   const fetchCategories = () => {
     fetch("http://localhost:4000/api/categories")
@@ -192,12 +196,21 @@ const Products = ({ addToCart }) => {
                     alt={product.name}
                   />
                   <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
-                      {product.name}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Category: {product.category_id ? product.category_id.name : "Uncategorized"}
-                    </Typography>
+                  <Typography gutterBottom variant="h5" component="div">
+              {product.name}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              <strong>Price:</strong> ${product.price}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              <strong>Brand:</strong> {product.brand}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              <strong>Description:</strong> {product.description}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              <strong>Category:</strong> {getCategoryName(product.category_id)}
+            </Typography>
                     <Button
                       variant="contained"
                       color="primary"
