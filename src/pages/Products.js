@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Typography,
   Container,
@@ -12,17 +12,19 @@ import {
   FormControl,
   Snackbar,
   Modal,
-  TextField,
   IconButton,
   Box,
-  InputLabel,
 } from "@mui/material";
 import {
   AddShoppingCart as AddShoppingCartIcon,
   Add as AddIcon,
-  ErrorOutline as ErrorOutlineIcon,
   Delete as DeleteIcon,
 } from "@mui/icons-material";
+import CreateCategoryModal from "../components/Modals/CreateCategoryModal";
+import DeleteConfirmationModal from "../components/Modals/DeleteConfirmationModal";
+import CreateProductModal from "../components/Modals/CreateProductModal";
+import DeleteCategoryModal from "../components/Modals/DeleteCategoryModal";
+import ErrorModal from "../components/Modals/ErrorModal";
 
 const Products = ({ addToCart }) => {
   const [category, setCategory] = useState("all");
@@ -32,7 +34,7 @@ const Products = ({ addToCart }) => {
   const [newCategoryName, setNewCategoryName] = useState("");
   const [isModalOpen, setModalOpen] = useState(false);
   const [isErrorModalOpen, setErrorModalOpen] = useState(false);
-  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isDeleteModalCategoryOpen, setDeleteModalCategoryOpen] = useState(false);
   const [newProductData, setNewProductData] = useState({
     name: "",
     price: 0,
@@ -41,7 +43,8 @@ const Products = ({ addToCart }) => {
     category_id: "",
   });
   const [isProductModalOpen, setProductModalOpen] = useState(false);
-
+  const [productIdToDelete, setProductIdToDelete] = useState(null);
+  const [isDeleteModalProductOpen, setDeleteModalProductOpen] = useState(false);
 
   // Fetch categorias del seervidor
   const fetchCategories = () => {
@@ -55,7 +58,7 @@ const Products = ({ addToCart }) => {
   };
 
   // Fetch productos basado en la categoria seleccionada
-  const fetchProducts = () => {
+  const fetchProducts = useCallback(() => {
     const url =
       category === "all"
         ? "http://localhost:4000/api/products"
@@ -67,7 +70,7 @@ const Products = ({ addToCart }) => {
         setProducts(data.products || []);
       })
       .catch((error) => console.error("Error fetching products:", error));
-  };
+  }, [category]);
 
   useEffect(() => {
     fetchCategories();
@@ -117,6 +120,7 @@ const Products = ({ addToCart }) => {
 
   // Handle the opening of the modal for creating a new product
   const handleOpenProductModal = () => {
+    setNewProductData({ name: "", price: 0, brand: "", description: "", category_id: "" });
     setProductModalOpen(true);
   };
 
@@ -126,6 +130,7 @@ const Products = ({ addToCart }) => {
 
   // Handle the opening of the modal for creating a new category
   const handleOpenCategoryModal = () => {
+    setNewCategoryName("")
     setModalOpen(true);
   };
  
@@ -134,8 +139,8 @@ const Products = ({ addToCart }) => {
     setModalOpen(false);
   };
 
-  // Handle the closing of the error modal
-  const handleCloseErrorModal = () => {
+   // Handle the closing of the error modal
+   const handleCloseErrorModal = () => {
     setErrorModalOpen(false);
   };
 
@@ -157,13 +162,25 @@ const Products = ({ addToCart }) => {
 
   // Handle opening the modal for deleting a category
   const handleOpenDeleteModal = () => {
-    setDeleteModalOpen(true);
+    setDeleteModalCategoryOpen(true);
   };
-
+  
   // Handle closing the modal for deleting a category
   const handleCloseDeleteModal = () => {
-    setDeleteModalOpen(false);
+    setDeleteModalCategoryOpen(false);
   };
+  
+// Handle opening the modal for deleting a product
+  const handleOpenDeleteProductModal = (product) => {
+    setProductIdToDelete(product._id);
+    setDeleteModalProductOpen(true)
+  };
+  
+  // Handle closing the modal for deleting a product
+  const handleCloseDeleteProductModal = () => {
+    setProductIdToDelete(null);
+    setDeleteModalProductOpen(false);
+  };  
 
   // Handle the creation of a new category
   const handleCreateCategory = () => {
@@ -210,148 +227,24 @@ const Products = ({ addToCart }) => {
       .catch((error) => console.error("Error deleting category:", error));
   };
 
-  // contenido del modal para crear producto
-  const createProductModal = (
-    <Box
-      sx={{
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        width: 400,
-        bgcolor: "background.paper",
-        boxShadow: 24,
-        p: 4,
-      }}
-    >
-      <Typography variant="h6" component="h2">
-        Create New Product
-      </Typography>
-      <TextField
-        label="Product Name"
-        fullWidth
-        margin="normal"
-        variant="outlined"
-        value={newProductData.name}
-        onChange={(e) => setNewProductData({ ...newProductData, name: e.target.value })}
-      />
-      <TextField
-        label="Price"
-        fullWidth
-        margin="normal"
-        variant="outlined"
-        type="number"
-        value={newProductData.price}
-        onChange={(e) => setNewProductData({ ...newProductData, price: e.target.value })}
-      />
-      <TextField
-        label="Brand"
-        fullWidth
-        margin="normal"
-        variant="outlined"
-        value={newProductData.brand}
-        onChange={(e) => setNewProductData({ ...newProductData, brand: e.target.value })}
-      />
-      <TextField
-        label="Description"
-        fullWidth
-        margin="normal"
-        variant="outlined"
-        multiline
-        rows={4}
-        value={newProductData.description}
-        onChange={(e) => setNewProductData({ ...newProductData, description: e.target.value })}
-      />
-      <FormControl fullWidth margin="normal" variant="outlined">
-        <InputLabel id="category-select-label">Category</InputLabel>
-        <Select
-          label="Category"
-          value={newProductData.category_id}
-          onChange={(e) => setNewProductData({ ...newProductData, category_id: e.target.value })}
-        >
-          {categories.map((cat) => (
-            <MenuItem key={cat._id} value={cat._id}>
-              {cat.name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-      <Button variant="contained" color="primary" onClick={handleCreateProduct}>
-        Create
-      </Button>
-    </Box>
-  );
-
-  // contenido del modal para crear categoria
+  const handleDeleteProduct = (product) => {
+    const productId = product;
+    console.log("Deleting product with ID:", product);
   
-  const createCategoryModal = (
-    <Box
-      sx={{
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        width: 400,
-        bgcolor: "background.paper",
-        boxShadow: 24,
-        p: 4,
-      }}
-    >
-      <Typography variant="h6" component="h2">
-        Create New Category
-      </Typography>
-      <TextField
-        label="Category Name"
-        fullWidth
-        margin="normal"
-        variant="outlined"
-        value={newCategoryName}
-        onChange={(e) => setNewCategoryName(e.target.value)}
-      />
-      <Button variant="contained" color="primary" onClick={handleCreateCategory}>
-        Create
-      </Button>
-    </Box>
-  );
+    // Llama a la API para eliminar el producto con el ID proporcionado
+    fetch(`http://localhost:4000/api/products/${productId}`, {
+      method: "DELETE",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Actualiza la lista de productos después de la eliminación
+        fetchProducts();
+        // Cierra el modal de confirmación de eliminación
+        handleCloseDeleteProductModal();
+      })
+      .catch((error) => console.error("Error deleting product:", error));
+  };
 
-  // contenido del modal para borrar categoria
-  const deleteCategoryModal = (
-    <Box
-      sx={{
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        width: 400,
-        bgcolor: "background.paper",
-        boxShadow: 24,
-        p: 4,
-      }}
-    >
-      <Typography variant="h6" component="h2">
-        Delete Category
-      </Typography>
-      <Typography variant="body2" color="text.secondary">
-        Are you sure you want to delete the following categories?
-      </Typography>
-      <ul>
-        {categories.map((cat) => (
-          <li key={cat._id}>
-            {cat.name}
-            <IconButton
-              color="secondary"
-              onClick={() => handleDeleteCategory(cat._id)}
-            >
-              <DeleteIcon />
-            </IconButton>
-          </li>
-        ))}
-      </ul>
-      <Button variant="contained" color="primary" onClick={handleCloseDeleteModal}>
-        Cancel
-      </Button>
-    </Box>
-  );
 
   return (
     <div>
@@ -421,6 +314,13 @@ const Products = ({ addToCart }) => {
                   >
                     Add to Cart
                   </Button>
+                  <Button
+                        variant="outlined"
+                        color="secondary"
+                        onClick={() => handleOpenDeleteProductModal(product)}
+                      >
+                        Delete
+                  </Button>
                 </CardContent>
               </Card>
             </Grid>
@@ -442,7 +342,7 @@ const Products = ({ addToCart }) => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        {createCategoryModal}
+        <CreateCategoryModal newCategoryName={newCategoryName} setNewCategoryName={setNewCategoryName} handleCreateCategory={handleCreateCategory}/>
       </Modal>
 
       {/* Modal para crear producto */}
@@ -452,30 +352,37 @@ const Products = ({ addToCart }) => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        {createProductModal}
-
+        <CreateProductModal setNewProductData={setNewProductData} handleCreateProduct={handleCreateProduct} newProductData={newProductData} categories={categories}/>
       </Modal>
 
+      {/* Modal para borrar producto */}
+      <Modal
+        open={isDeleteModalProductOpen}
+        onClose={handleCloseDeleteProductModal}
+        aria-labelledby="delete-modal-title"
+        aria-describedby="delete-modal-description"
+      >
+        <DeleteConfirmationModal handleDeleteProduct={handleDeleteProduct} productIdToDelete={productIdToDelete} handleCloseDeleteProductModal={handleCloseDeleteProductModal}/>
+      </Modal>
 
-
-      {/* Modal for showing the error */}
+      {/* Modal para mostrar error */}
       <Modal
         open={isErrorModalOpen}
         onClose={handleCloseErrorModal}
         aria-labelledby="error-modal-title"
         aria-describedby="error-modal-description"
       >
-        {createCategoryModal}
+        <ErrorModal handleCloseErrorModal={handleCloseErrorModal}/>
       </Modal>
 
       {/* Modal for deleting a category */}
       <Modal
-        open={isDeleteModalOpen}
+        open={isDeleteModalCategoryOpen}
         onClose={handleCloseDeleteModal}
         aria-labelledby="delete-modal-title"
         aria-describedby="delete-modal-description"
       >
-        {deleteCategoryModal}
+        <DeleteCategoryModal handleDeleteCategory={handleDeleteCategory} categories={categories} handleCloseDeleteModal={handleCloseDeleteModal} DeleteIcon={DeleteIcon} />
       </Modal>
     </div>
   );

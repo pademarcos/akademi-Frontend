@@ -31,7 +31,7 @@ const Cart = ({ cartItems, removeFromCart, updateQuantity }) => {
       ) : (
         <List>
           {cartItems.map((item) => (
-            <ListItem key={item.id}>
+            <ListItem key={item._id}>
               <ListItemText primary={item.name}  secondary={`Price: $${item.price}`}/>
               <Grid container alignItems="center">
                 <Grid item>
@@ -39,13 +39,13 @@ const Cart = ({ cartItems, removeFromCart, updateQuantity }) => {
                     type="number"
                     value={item.quantity}
                     InputProps={{ inputProps: { min: 1 } }}
-                    onChange={(e) => updateQuantity(item.id, parseInt(e.target.value, 10))}
+                    onChange={(e) => updateQuantity(item._id, parseInt(e.target.value, 10))}
                   />
                 </Grid>
                 <Grid item>
                   <IconButton
                     color="primary"
-                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    onClick={() => updateQuantity(item._id, item.quantity + 1)}
                   >
                     <AddIcon />
                   </IconButton>
@@ -53,7 +53,7 @@ const Cart = ({ cartItems, removeFromCart, updateQuantity }) => {
                 <Grid item>
                   <IconButton
                     color="primary"
-                    onClick={() => updateQuantity(item.id, Math.max(item.quantity - 1, 1))}
+                    onClick={() => updateQuantity(item._id, Math.max(item.quantity - 1, 1))}
                   >
                     <RemoveIcon />
                   </IconButton>
@@ -64,7 +64,7 @@ const Cart = ({ cartItems, removeFromCart, updateQuantity }) => {
                   </Typography>
                   <Button
                     color="secondary"
-                    onClick={() => removeFromCart(item.id)}
+                    onClick={() => removeFromCart(item._id)}
                     startIcon={<DeleteIcon />}
                   >
                     Remove

@@ -4,26 +4,14 @@ import {
   Toolbar,
   Typography,
   Button,
-  Container,
   CssBaseline,
-  Menu,
-  MenuItem,
-  IconButton,
   Badge,
 } from '@mui/material';
 import { Link } from 'react-router-dom';  
-import { AccountCircle, ShoppingCart } from '@mui/icons-material';
+import { ShoppingCart } from '@mui/icons-material';
 
 const Nav = ({ cartItems }) => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
 
-  const handleMenuClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
 
   const totalQuantity = cartItems ? cartItems.reduce((total, item) => total + item.quantity, 0) : 0;
 
@@ -49,37 +37,9 @@ const Nav = ({ cartItems }) => {
             </Badge>
             Cart
             </Button>
-          <Button component={Link} to="/contact" color="inherit">
-            Contact
-          </Button>
-
-          
-          <IconButton color="inherit" onClick={handleMenuClick}>
-            <AccountCircle />
-          </IconButton>
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleMenuClose}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-          >
-            <MenuItem component={Link} to="/login" onClick={handleMenuClose}>
-              Login
-            </MenuItem>
-            <MenuItem component={Link} to="/register" onClick={handleMenuClose}>
-              Register
-            </MenuItem>
-          </Menu>
         </Toolbar>
       </AppBar>
-      <Container></Container>
+     
     </div>
   );
 };

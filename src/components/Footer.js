@@ -10,10 +10,10 @@ const Footer = () => {
         sx={{
           py: 3,
           backgroundColor: "#212121", 
-          color: "#ffffff", 
-          position: "fixed",
+          color: "#ffffff",
+          width: "100%", 
+          
           bottom: 0,
-          width: "100%",
         }}
       >
         <Container maxWidth="md">
