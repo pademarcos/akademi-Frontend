@@ -6,9 +6,7 @@ import {
   Card,
   CardContent,
   CardMedia,
-  Button,
   styled,
-  Link,
 } from "@mui/material";
 
 const HeroContent = styled("div")({
@@ -30,10 +28,6 @@ const StyledCard = styled(Card)({
 
 const StyledCardMedia = styled(CardMedia)({
   paddingTop: "56.25%", 
-});
-
-const ExploreButtonContainer = styled(Container)({
-  marginTop: (theme) => theme.spacing(2),
 });
 
 const HomePage = () => {
